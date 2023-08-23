@@ -1,0 +1,104 @@
+<!--{% extends 'body.html' %}-->
+{% load static  %}
+{% block head %}
+
+<!--DATATABLE-->
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+<link href="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/css/responsive.bootstrap4.min.css' %}"/>
+
+
+<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+
+{% block head_list %}
+
+
+{% endblock %}
+
+
+{% endblock %}
+
+{% block contents %}
+<div class="container-fluid mb-6">
+    <div class="row px-xl-6">
+    </div>
+    <div id="detalle" style="display: none;" class="card notificacion">
+        <div class="card-body d-flex" align="center">
+            <div class="mr-3">
+                <img class="card-img-top" id="perfil" src="" alt="Foto de perfil">
+            </div>
+            <div>
+                <h2 class="card-title" id="nombre-empleado"></h2>
+                <p class="card-text" id="dni-empleado"></p>
+                <p class="card-text" id="estado-empleado"></p>
+                <p class="card-text" id="telefono-empleado"></p>
+                <p class="card-text" id="correo-empleado"></p>
+                <p class="card-text" id="direccion-empleado"></p>
+                <!-- Agrega otros campos relevantes del empleado aquí -->
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card card-primary">
+        <div class="card-header">
+            <i class="fa fa-list"></i> {{title}}
+        </div>
+        <div class="card-body">
+            <table class="table display table-bordered table-striped table-hover table-sm id stripe row-border order-column nowrap"
+                   id="data">
+                <thead>
+                {% block columns %}
+
+                {% endblock %}
+                </thead>
+                <tbody>
+                {% block rows %}
+
+                {% endblock %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <a href="{{create_url}}" class="btn btn-primary btn-flat btnTest">
+                <i class="fas fa-plus"></i> Nuevo registro
+            </a>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}
+
+{% block javascript  %}
+<script type="application/javascript">
+    $(function () {
+         $('#data').DataTable({
+             responsive: true,
+             autoWidth: false
+         });
+
+         $('.btnTest').on('click', function () {
+             $.ajax({
+
+                 type: 'POST',
+                 data: {id: 1},
+                 dataType: 'json'
+             }).done(function (data) {
+                 console.log(data);
+             }).fail(function (jqXHR, textStatus, errorThrown) {
+                 alert(textStatus + ': ' + errorThrown);
+             }).always(function (data) {
+
+             });
+         });
+    });
+
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'home.html' %}
+
+{% block body %}
+        <!--Incluye el Hearder -->
+        {% include 'header.html' %}
+
+
+
+        {% block contents %}
+        <!--Contenido del cuerpo-->
+        {% endblock %}
+
+        <!--Footer-->
+        {% include 'footer.html' %}
+
+        {% block javascript  %}
+        <!--Java script static-->
+        {% endblock %}
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'form.html' %}
+
+
+{% block campos %}
+
+<div class="row">
+
+    <div class="col-md-4">
+        <label> {{ form.name.label }}</label>
+        {{ form.name }}
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label>{{form.lastname.label}}</label>
+        {{ form.lastname }}
+        <!--                            <input type="text" class="form-control" id="validationCustom02" required>-->
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col">
+        <label>{{form.dni.label}}</label>
+        {{ form.dni }}<br>
+        <!--                            <input type="text" class="form-control" id="validationCustom03" required>-->
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label>{{form.gender.label}}</label>
+        {{ form.gender }}
+        <!--                            <input type="text" class="form-control" id="validationCustom03" required>-->
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label>{{form.date_joined.label}}</label>
+        {{ form.date_joined }}
+        <!--                            <input type="text" class="form-control" id="validationCustom03" required>-->
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label>{{form.state.label}}</label>
+        {{ form.state }}<br>
+        <!--                            <input type="text" class="form-control" id="validationCustom03" required>-->
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+    <div class="col-md-4">
+        <label>{{form.address.label}}</label>
+        {{ form.address }}
+        <!--                            <input type="text" class="form-control" id="validationCustom03" required>-->
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label>{{ form.fecha_ingreso.label }}</label>
+        {{ form.fecha_ingreso }}
+    </div>
+    <div class="col-md-4">
+        <label>{{form.phone.label}}</label>
+        {{ form.phone }}<br>
+    </div>
+
+    <div class="col-md-4">
+        <label>{{form.email.label}}</label>
+        {{ form.email }}
+        <!--                            <input type="text" class="form-control" id="validationCustom03" required>-->
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+    <div class="col-md-4">
+        <label>{{form.cargo.label}}</label>
+        {{ form.cargo }}
+    </div>
+
+    <div class="col-md-4">
+        <label>{{form.image.label}}</label>
+        {{ form.image }}<br>
+    </div>
+
+
+</div>
+
+{% endblock %}
