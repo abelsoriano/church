@@ -67,10 +67,25 @@ class AttendanceList(ListView):
     def get_queryset(self):
         queryset = Attendance.objects.annotate(
             fecha=Trunc('date', 'day'),
-            weekday = Extract('date', 'dow')
-        ).values('fecha','weekday').annotate(
+            weekday_name = Extract('date', 'dow')
+        ).values('fecha', 'weekday_name').annotate(
             total=Count('id')
         ).order_by('-fecha')
+
+        # Convierte el número del día de la semana al nombre correspondiente
+        weekdays_mapping = {
+            0: 'Domingo',
+            1: 'Lunes',
+            2: 'Martes',
+            3: 'Miércoles',
+            4: 'Jueves',
+            5: 'Viernes',
+            6: 'Sábado',
+        }
+
+        for entry in queryset:
+            entry['weekday_name'] = weekdays_mapping.get(entry['weekday_name'], 'Desconocido')
+
         return queryset
 
     def get_context_data(self, **kwargs):

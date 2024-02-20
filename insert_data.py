@@ -24,7 +24,7 @@ def get_random_person_image():
     # Parámetros de la solicitud
     params = {
         'query': 'person',
-        'per_page': 30,
+        'per_page': 25,
         'client_id': api_key
     }
 
@@ -72,9 +72,9 @@ def generar_miembro():
     dni = fake.random_number(digits=11)
     gender_choices = [choice[0] for choice in Miembro._meta.get_field('gender').choices]
     gender = random.choice(gender_choices)
-    date_joined = fake.date_of_birth().strftime('%Y-%m-%d')
+    date_joined = fake.date_of_birth().strftime('%d-%m-%y')
     address = fake.address()
-    fecha_ingreso = fake.future_date(end_date='+30d').strftime('%Y-%m-%d')
+    fecha_ingreso = fake.future_date(end_date='+30d').strftime('%d-%m-%y')
     phone = generate_phone_number()
     email = fake.email()
     cargo = random.choice(Cargo.objects.all())
