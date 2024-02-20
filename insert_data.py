@@ -2,9 +2,10 @@ import os
 from django.core.files import File
 
 import django
-from faker import Faker
+
 import random
 import requests
+from faker import Faker
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "setting.settings")
 django.setup()
@@ -64,6 +65,7 @@ def generate_phone_number():
 def generar_persona():
     gender_choices = ['masculino', 'femenino']
     estado_choices = ['Activo', 'Inactivo']
+    categori_choices = ['Damas', 'Caballeros', 'Jovenes']
 def generar_miembro():
     name = fake.first_name()
     lastname = fake.last_name()
@@ -78,6 +80,8 @@ def generar_miembro():
     cargo = random.choice(Cargo.objects.all())
     image = fake.image_url()
     state = random.choice(Estado.objects.all())
+    categori_choices = [choice[0] for choice in Miembro._meta.get_field('category').choices]
+    category = random.choice(categori_choices)
 
     avatar_url = get_random_person_image()
     image_filename = f'{name}_{lastname}.jpg'
@@ -99,12 +103,13 @@ def generar_miembro():
         email=email,
         cargo=cargo,
         # image = miembro.read_image(),
-        state=state
+        state=state,
+        category=category
     )
     with open(image_filename, "rb") as image_file:
         miembro.image.save(os.path.basename(image_path), File(image_file), save=True)
     miembro.save()
 
 if __name__ == '__main__':
-    for _ in range(5):  # Generar 10 miembros aleatorios con cargos aleatorios
+    for _ in range(20):  # Generar 10 miembros aleatorios con cargos aleatorios
         generar_miembro()

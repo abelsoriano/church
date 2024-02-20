@@ -1,0 +1,65 @@
+{% extends 'form.html' %}
+{% load static %}
+
+{% block campos %}
+<div class="row">
+
+    <div class="col-md-4">
+        <label> {{ form.fecha.label }}</label>
+        {{ form.fecha }}
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label> {{ form.direccion.label }}</label>
+        {{ form.direccion }}<br>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label> {{ form.lectura.label }}</label>
+        {{ form.lectura }}
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label> {{ form.devocional_1.label }}</label>
+        {{ form.devocional_1 }}
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label> {{ form.cultural.label }}</label>
+        {{ form.cultural }}<br>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label> {{ form.mensaje.label }}</label>
+        {{ form.mensaje }}
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label> {{ form.description.label }}</label>
+        {{ form.description }}
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -2,11 +2,13 @@ from datetime import datetime
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
 from django.forms import model_to_dict
 from django.utils import timezone
-from app.choices import gender_choices, asistencia_choices
-from setting.settings import MEDIA_URL, STATIC_URL
+from app.choices import *
+from setting.settings import MEDIA_URL
 
 
 # Create your models here.
@@ -29,7 +31,6 @@ class Estado(models.Model):
         db_table = 'estado'
         ordering = ['id']
 
-
 class Cargo(models.Model):
     name = models.CharField(max_length=50, verbose_name='Nombre')
 
@@ -46,12 +47,9 @@ class Cargo(models.Model):
         db_table = 'cargo'
         ordering = ['id']
 
-
 def validate_dni_length(value):
     if value is not None and (value < 10000000000 or value > 99999999999):
         raise ValidationError("La longitud del número de cédula debe ser de 11 dígitos.")
-
-
 def validate_phone_prefix(value):
     if value is not None and (value < 1000000000 or value > 9999999999):
         raise ValidationError("La longitud del número de teléfono debe ser de 10 dígitos.")
@@ -63,7 +61,7 @@ def validate_phone_prefix(value):
     if not phone_str.startswith(("809", "829", "849")):
         raise ValidationError("El número de teléfono debe comenzar con 809, 829 o 849.")
 
-
+#Crearte miembros
 class Miembro(models.Model):
     name = models.CharField(max_length=50, verbose_name='NOMBRE')
     lastname = models.CharField(max_length=50, verbose_name='APELLIDOS')
@@ -79,6 +77,7 @@ class Miembro(models.Model):
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, verbose_name='CARGO')
     image = models.ImageField(upload_to='avatar', null=True, blank=True, verbose_name='IMAGEN')
     state = models.ForeignKey(Estado, on_delete=models.CASCADE, verbose_name="ESTADO")
+    category = models.CharField(max_length=20, choices=category_choices, verbose_name='CATEGORIA')
 
     def read_image(self):
         if self.image:
@@ -110,16 +109,45 @@ class Miembro(models.Model):
         db_table = 'miembro'
         ordering = ['id']
 
+class Grupo(models.Model):
+    name = models.CharField(max_length=50, verbose_name='NOMBRE DEL GRUPO')
+    members = models.ManyToManyField(Miembro, related_name='grupos', verbose_name='MIEMBROS DEL GRUPO')
 
-class Asistencia(models.Model):
-    usuario = models.ForeignKey(Miembro, on_delete=models.CASCADE)
-    estado = models.CharField(max_length=30)  # Presente, Ausente
-    status = models.BooleanField(default=True)
-    fecha = models.DateField(verbose_name='FECHA DE CREACION')
+#Esta vista es para establecer los difertentes servico de la iglesia
+class Servicio(models.Model):
+    fecha = models.DateField(default=timezone.now, verbose_name='FECHA DE SERVICIO')
+    hora = models.TimeField(default=timezone.now)
+    direccion = models.CharField(max_length=200, verbose_name='DIRECCION DEL CULTO DE ALTAR')
+    lectura = models.TextField(verbose_name='LECTURA DE LA PALABRAS')
+    devocional_1 = models.CharField(max_length=100, verbose_name='DEVOCIONAL')
+    cultural = models.TextField(verbose_name='CULTURAL')
+    mensaje = models.TextField(verbose_name='MENSAJE DE LAS PALABRAS')
+    description = models.TextField(blank=True, null=True, verbose_name='DESCRIPCION')
+
+    def __str__(self):
+        return str(self.hora.strftime("%H:%M:%S"))
+
+    class Meta:
+        verbose_name = 'Servicio'
+        verbose_name_plural ='Servicios'
+
+#Asistencia de servicios
+class Attendance(models.Model):
+    miembro = models.ForeignKey(Miembro, on_delete=models.CASCADE)
+    date = models.DateField(null=True, blank=True, default=timezone.now, verbose_name='FECHA DE SERVICIO')
+    present = models.BooleanField(default=False, null=True, blank=True, verbose_name='PRESENTE')
+    day_of_week = models.CharField(max_length=10, blank=True, editable=False, verbose_name='DÍA DE LA SEMANA')
 
     class Meta:
         verbose_name = 'Asistencia'
         verbose_name_plural = 'Asistencias'
-        db_table = 'asistencia'
-        ordering = ['id']
+
+@receiver(pre_save, sender=Attendance)
+def update_day_of_week(sender, instance, **kwargs):
+    # Actualizar el día de la semana antes de guardar el objeto Attendance
+    if instance.date:
+        instance.day_of_week = instance.date.strftime('%A')
+
+
+
 

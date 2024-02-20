@@ -1,0 +1,109 @@
+{% extends 'body.html' %}
+{% load static  %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'lib/datatables-1.10.20/css/dataTables.bootstrap4.min.css' %}"/>
+<link rel="stylesheet"
+      href="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/css/responsive.bootstrap4.min.css' %}"/>
+<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+
+<script src="{% static 'asistencia/list.js' %}"></script>
+
+{% endblock %}
+
+{% block contents %}
+<div class="card card-primary">
+    <div class="card-body">
+         <h4 class="modal-title" >{{title}}</h4>
+        <table class="table display table-bordered table-striped table-hover table-sm id stripe row-border order-column nowrap"
+               id="data">
+            <thead>
+            <tr class="table-primary">
+                <th scope="col">Fecha de Registro</th>
+                <th scope="col">Dia de Registro</th>
+                <th scope="col">Total de Asistencias</th>
+                <th scope="col">Opciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for asistencia in asistencias %}
+            <tr>
+                <td>{{ asistencia.fecha }}</td>
+                <td>{{ asistencia.weekday }}</td>
+                <td>{{ asistencia.total }}</td>
+                <td>
+                    <a href="#" class="btn btn-primary btn-xs btn-flat show-details"
+                       data-date="{{ asistencia.fecha|date:'Y-m-d' }}">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ create_url }}" class="btn btn-primary btn-flat btnTest">
+            <i class="fas fa-plus"></i> Nuevo registro
+        </a>
+    </div>
+</div>
+
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Detalles de Asistencia</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table display table-bordered table-striped table-hover table-sm id stripe row-border order-column nowrap"
+                       id="detailsTable">
+                    <thead>
+                    <tr class="table-primary">
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Fecha de Registro</th>
+                        <th scope="col">Presente</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<script type="application/javascript">
+    $(function () {
+        $('#data').DataTable({
+            responsive: true,
+            autoWidth: false
+        });
+
+        $('.btnTest').on('click', function () {
+            $.ajax({
+                url: '{% url 'asys:list_asistencia' %}',
+                type: 'POST',
+                data: {id: 1},
+                dataType: 'json'
+            }).done(function (data) {
+                console.log(data);
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus + ': ' + errorThrown);
+            }).always(function (data) {
+
+            });
+        });
+    });
+</script>
+
+
+

@@ -1,49 +1,46 @@
 $(function () {
-    $('#data').DataTable({
-
+    var $detailsTable = $('#detailsTable').DataTable({
         responsive: true,
         autoWidth: false,
         destroy: true,
         deferRender: true,
-        ajax: {
-            url: window.location.pathname,
-            type: 'POST',
-            data: {'action': 'searchdata'},
-            dataSrc: ""
-
-        },
         columns: [
-            {"data": "id"},
-            {"data": "estado"},
-            {"data": "opcion"}
-        ],
-
-
-
-        columnDefs: [
+            { "data": "id" },
+            { "data": "miembro_nombre_completo" },
+            { "data": "date" },
             {
-                targets: [-2],
-                class: 'text-center',
-                orderable: false,
-
-            },
-
-            {
-                targets: [-1],
-                class: 'text-center',
-                orderable: false,
-                render: function (data, type, row) {
-                    var buttons = '<a href="/erp/product/update/' + row.id + '/" class="btn btn-warning btn-xs btn-flat"><i class="fas fa-edit"></i></a> ';
-//                    buttons += '<a href="/erp/product/delete/' + row.id + '/" type="button" class="btn btn-danger btn-xs btn-flat"><i class="fas fa-trash-alt"></i></a>';
-                    return buttons;
+                "data": "present",
+                "render": function (data, type, row, meta) {
+                    if (type === 'display') {
+                        if (data) {
+                            return '<span class="badge badge-success">Presente</span>';
+                        } else {
+                            return '<span class="badge badge-danger">Ausente</span>';
+                        }
+                    }
+                    return data;  // Para otros tipos de renderización, como 'sort' o 'filter'
                 }
-            },
-        ],
-        initComplete: function (settings, json) {
+            }
+        ]
+    });
 
+    $('#data').DataTable({
+        responsive: true,
+        autoWidth: false,
+    });
+
+    $('.show-details').on('click', function () {
+    var date = $(this).data('date');
+    var url = '/asys/details/?date=' + date;
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function (data) {
+            $detailsTable.clear().rows.add(data.details).draw();
+            $('#detailsModal').modal('show');
         }
     });
 });
 
 
-
+});

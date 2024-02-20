@@ -17,3 +17,10 @@ asistencia_choices = (
     ('Presente','Presente'),
     ('Aucente','Aucente'),
 )
+
+category_choices = (
+        ('joven', 'Joven'),
+        ('dama', 'Dama'),
+        ('caballero', 'Caballero'),
+        ('adolecente', 'Adolecente'),
+)

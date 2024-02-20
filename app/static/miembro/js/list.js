@@ -1,16 +1,39 @@
 $(function () {
     $('#data').DataTable({
-
         responsive: true,
+        pageLength: 8,
         autoWidth: false,
         destroy: true,
         deferRender: true,
-        ajax: { 
+        ajax: {
             url: window.location.pathname,
             type: 'POST',
             data: {'action': 'searchdata'},
             dataSrc: ""
-
+        },
+        language: {
+            "decimal":        "",
+            "emptyTable":     "No hay datos disponibles en la tabla",
+            "info":           "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+            "infoEmpty":      "Mostrando 0 a 0 de 0 entradas",
+            "infoFiltered":   "(filtradas de _MAX_ entradas totales)",
+            "infoPostFix":    "",
+            "thousands":      ",",
+            "lengthMenu":     "Mostrar _MENU_ entradas",
+            "loadingRecords": "Cargando...",
+            "processing":     "Procesando...",
+            "search":         "Buscar:",
+            "zeroRecords":    "No se encontraron registros coincidentes",
+            "paginate": {
+                "first":      "Primero",
+                "last":       "Último",
+                "next":       "Siguiente",
+                "previous":   "Anterior"
+            },
+            "aria": {
+                "sortAscending":  ": activar para ordenar de manera ascendente",
+                "sortDescending": ": activar para ordenar de manera descendente"
+            }
         },
         columns: [
             {"data": "id"},
@@ -22,24 +45,18 @@ $(function () {
             {"data": "phone"},
             {"data": "opcion"}
         ],
-
-
-
         columnDefs: [
             {
                 targets: [-2],
                 class: 'text-center',
                 orderable: false,
-
             },
-
             {
                 targets: [-1],
                 class: 'text-center',
                 orderable: false,
                 render: function (data, type, row) {
                     var buttons = '<a href="/erp/product/update/' + row.id + '/" class="btn btn-warning btn-xs btn-flat"><i class="fas fa-edit"></i></a> ';
-//                    buttons += '<a href="/erp/product/delete/' + row.id + '/" type="button" class="btn btn-danger btn-xs btn-flat"><i class="fas fa-trash-alt"></i></a>';
                     return buttons;
                 }
             },

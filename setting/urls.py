@@ -3,11 +3,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 
-from login.views import LoginFormView
+from login.views import LoginFormView, RegisterView
 from setting import settings
 
 urlpatterns = [
     path('', LoginFormView.as_view(), name='login'),
+    path('register/', RegisterView.as_view(), name='register'),
     path('login/', include('login.urls')),
     path('admin/'
          '', admin.site.urls),

@@ -37,6 +37,8 @@ a{
     z-index:0;
     box-shadow: 0 0 15px 9px #00000096;
 }
+
+
 .login-reg-panel input[type="radio"]{
     position:relative;
     display:none;
@@ -122,7 +124,7 @@ a{
     border: 1px solid #b5b5b5;
     outline: none;
 }
-.register-show input[type="button"] {
+.register-show input[type="submit"] {
     max-width: 150px;
     width: 100%;
     background: #444444;

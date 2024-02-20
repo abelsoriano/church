@@ -1,46 +1,27 @@
-from django.contrib.auth import login, logout
+from pyexpat.errors import messages
+
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
 
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import FormView, RedirectView
 
 import setting.settings as setting
+from login.form import RegisterForm
 
 
 class LoginFormView(LoginView):
-    template_name = 'logins.html'
+    template_name = 'registration/login.html'
 
     def dispatch(self, request, *args, **kwargs):
        if request.user.is_authenticated:
            return HttpResponseRedirect(setting.LOGIN_REDIRECT_URL)
        return super().dispatch(request,*args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Iniciar sesión'
-        return context
-
-
-class LoginFormView2(FormView):
-    form_class = AuthenticationForm
-    template_name = 'login.html'
-    success_url = reverse_lazy(setting.LOGIN_REDIRECT_URL)
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return HttpResponseRedirect(self.success_url)
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        login(self.request, form.get_user())
-        return HttpResponseRedirect(self.success_url)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Iniciar sesión'
-        return context
 
 
 class LogoutView(RedirectView):
@@ -49,3 +30,25 @@ class LogoutView(RedirectView):
     def dispatch(self, request, *args, **kwargs):
         logout(request)
         return super().dispatch(request, *args, **kwargs)
+
+
+class RegisterView(View):
+    def get(self, request):
+        data = {
+            'form': RegisterForm()
+        }
+        return render(request, 'login.html', data)
+
+    def post(self, request):
+        user_created = RegisterForm(data=request.POST)
+        if user_created.is_valid():
+            user = user_created.save()
+            user = authenticate(username=user_created.cleaned_data['username'],
+                                password=user_created.cleaned_data['password1'])
+            login(request, user)
+            return redirect(setting.LOGIN_REDIRECT_URL)
+
+        data = {
+            'form': user_created
+        }
+        return render(request, 'login.html', data)

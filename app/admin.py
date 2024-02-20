@@ -5,4 +5,12 @@ from app.models import *
 admin.site.register(Miembro)
 admin.site.register(Cargo)
 admin.site.register(Estado)
-admin.site.register(Asistencia)
+admin.site.register(Servicio)
+
+
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ('miembro', 'date', 'present')
+
+admin.site.register(Attendance, AttendanceAdmin)
+
+

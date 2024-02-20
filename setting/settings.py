@@ -40,12 +40,13 @@ INSTALLED_APPS = [
     # Libs
     'widget_tweaks',
     'rest_framework',
+    'rest_framework_swagger',
     'bootstrap4',
 
 
     # Apps
     'app',
-    'login'
+    'login.apps.LoginConfig'
 
 ]
 
@@ -84,8 +85,12 @@ WSGI_APPLICATION = 'setting.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'church',
+        'USER': 'admin',
+        'PASSWORD': 'nicolas',
+        'HOST': 'localhost',   # Puedes cambiarlo si tu base de datos está en un servidor remoto
+        'PORT': '5432',        # El puerto por defecto de PostgreSQL
     }
 }
 
@@ -112,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-ES'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santo_Domingo'
 
 USE_I18N = True
 
@@ -140,3 +145,5 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

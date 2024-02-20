@@ -1,21 +1,14 @@
-<!--{% extends 'body.html' %}-->
+{% extends 'body.html' %}
 {% load static  %}
 {% block head %}
-
-<!--DATATABLE-->
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
-<link href="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/css/responsive.bootstrap4.min.css' %}"/>
-
-
-<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
+    <link rel="stylesheet" href="{% static 'lib/datatables-1.10.20/css/dataTables.bootstrap4.min.css' %}"/>
+    <link rel="stylesheet"
+          href="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/css/responsive.bootstrap4.min.css' %}"/>
+    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
 {% block head_list %}
-
-
 {% endblock %}
 
 
@@ -74,31 +67,27 @@
 {% endblock %}
 
 {% block javascript  %}
-<script type="application/javascript">
-    $(function () {
-         $('#data').DataTable({
-             responsive: true,
-             autoWidth: false
-         });
+ <script type="application/javascript">
+        $(function () {
+            $('#data').DataTable({
+                responsive: true,
+                autoWidth: false
+            });
 
-         $('.btnTest').on('click', function () {
-             $.ajax({
+            $('.btnTest').on('click', function () {
+                $.ajax({
+                    url: '{% url 'erp:category_list' %}',
+                    type: 'POST',
+                    data: {id: 1},
+                    dataType: 'json'
+                }).done(function (data) {
+                    console.log(data);
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus + ': ' + errorThrown);
+                }).always(function (data) {
 
-                 type: 'POST',
-                 data: {id: 1},
-                 dataType: 'json'
-             }).done(function (data) {
-                 console.log(data);
-             }).fail(function (jqXHR, textStatus, errorThrown) {
-                 alert(textStatus + ': ' + errorThrown);
-             }).always(function (data) {
-
-             });
-         });
-    });
-
-
-</script>
-
-
+                });
+            });
+        });
+    </script>
 {% endblock %}
