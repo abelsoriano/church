@@ -11,7 +11,7 @@ from django.views import View
 from django.views.generic import FormView, RedirectView
 
 import setting.settings as setting
-from login.form import RegisterForm
+# from login.form import RegisterForm
 
 
 class LoginFormView(LoginView):

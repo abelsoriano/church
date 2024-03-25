@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
@@ -31,6 +33,7 @@ class Estado(models.Model):
         db_table = 'estado'
         ordering = ['id']
 
+
 class Cargo(models.Model):
     name = models.CharField(max_length=50, verbose_name='Nombre')
 
@@ -47,9 +50,12 @@ class Cargo(models.Model):
         db_table = 'cargo'
         ordering = ['id']
 
+
 def validate_dni_length(value):
     if value is not None and (value < 10000000000 or value > 99999999999):
         raise ValidationError("La longitud del número de cédula debe ser de 11 dígitos.")
+
+
 def validate_phone_prefix(value):
     if value is not None and (value < 1000000000 or value > 9999999999):
         raise ValidationError("La longitud del número de teléfono debe ser de 10 dígitos.")
@@ -61,7 +67,8 @@ def validate_phone_prefix(value):
     if not phone_str.startswith(("809", "829", "849")):
         raise ValidationError("El número de teléfono debe comenzar con 809, 829 o 849.")
 
-#Crearte miembros
+
+# Crearte miembros
 class Miembro(models.Model):
     name = models.CharField(max_length=50, verbose_name='NOMBRE')
     lastname = models.CharField(max_length=50, verbose_name='APELLIDOS')
@@ -109,11 +116,13 @@ class Miembro(models.Model):
         db_table = 'miembro'
         ordering = ['id']
 
+
 class Grupo(models.Model):
     name = models.CharField(max_length=50, verbose_name='NOMBRE DEL GRUPO')
     members = models.ManyToManyField(Miembro, related_name='grupos', verbose_name='MIEMBROS DEL GRUPO')
 
-#Esta vista es para establecer los difertentes servico de la iglesia
+
+
 class Servicio(models.Model):
     fecha = models.DateField(default=timezone.now, verbose_name='FECHA DE SERVICIO')
     hora = models.TimeField(default=timezone.now)
@@ -129,25 +138,36 @@ class Servicio(models.Model):
 
     class Meta:
         verbose_name = 'Servicio'
-        verbose_name_plural ='Servicios'
+        verbose_name_plural = 'Servicios'
 
-#Asistencia de servicios
+
 class Attendance(models.Model):
     miembro = models.ForeignKey(Miembro, on_delete=models.CASCADE)
     date = models.DateField(null=True, blank=True, default=timezone.now, verbose_name='FECHA DE SERVICIO')
     present = models.BooleanField(default=False, null=True, blank=True, verbose_name='PRESENTE')
     day_of_week = models.CharField(max_length=10, blank=True, editable=False, verbose_name='DÍA DE LA SEMANA')
 
+    # def __str__(self):
+    #     return self.miembro.name + ' ' + self.miembro.lastname
+
     class Meta:
         verbose_name = 'Asistencia'
         verbose_name_plural = 'Asistencias'
 
-@receiver(pre_save, sender=Attendance)
-def update_day_of_week(sender, instance, **kwargs):
-    # Actualizar el día de la semana antes de guardar el objeto Attendance
-    if instance.date:
-        instance.day_of_week = instance.date.strftime('%A')
 
+class MiembroStatus(models.Model):
+    miembro = models.ForeignKey(Miembro, on_delete=models.CASCADE)
+    status = models.CharField(max_length=100, choices=(
+        ('enfermo', 'Miembro se encuentra enfermo'),
+        ('visitar', 'Miembro necesita ser visitado'),
+        ('permiso', 'Miembro tiene permiso o excusa'),
 
+    ))
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.miembro.name} - {self.status}"
 
+    class Meta:
+        verbose_name = 'StatusMiembro'
+        verbose_name_plural = 'StatusMiembros'

@@ -29,18 +29,20 @@ $(function () {
         autoWidth: false,
     });
 
+    // Código para manejar click en .show-details
     $('.show-details').on('click', function () {
-    var date = $(this).data('date');
-    var url = '/asys/details/?date=' + date;
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function (data) {
-            $detailsTable.clear().rows.add(data.details).draw();
-            $('#detailsModal').modal('show');
-        }
+        var date = $(this).data('date');
+        var url = '/asys/details/?date=' + date;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                $detailsTable.clear().rows.add(data.details).draw();
+                $('#detailsModal').modal('show');
+            }
+        });
+
     });
-});
-
 
 });
+
