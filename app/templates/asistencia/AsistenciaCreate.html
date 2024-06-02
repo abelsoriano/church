@@ -1,50 +1,25 @@
-{% extends 'body.html' %}
+{% extends 'form.html' %}
 {% load static %}
 
-{% block contents %}
+{% block campos %}
 
-<form method="post" action="." enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="card-container" >
-        <div class="card" >
-            <div class="card-header" style="background-color: #1D3A49; color: white;">
-                {% if action == 'add' %}
-                <i class="fa fa-user-plus"></i>
-                {% else %}
-                <i class="fas fa-edit"></i>
-                {% endif %}
-
-                {{ title }}
-            </div>
-
-            <div class="card-body" style="background-color: #E5E8E8; color: white;">
-                <div class="row" id="miembros-list">
-                    <div class="col-md-12">
-                        <div class="d-flex flex-wrap">
-                            {% for miembro in miembros %}
-                            <div class="col-md-2 mb-2 form-check miembro-card">
-                                <input type="checkbox" id="{{ miembro.id }}_present" name="presente_{{miembro.id}}"
-                                       value="True"
-                                       {% if miembro.presente %} checked {% endif %}>
-                                <label for="{{ miembro.id }}_present">{{ miembro.name }} {{ miembro.lastname }}</label>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+<div class="card-body" style="background-color: #E5E8E8; color: white;">
+    <div class="row" id="miembros-list">
+        <div class="col-md-12">
+            <div class="d-flex flex-wrap">
+                {% for miembro in miembros %}
+                <div class="col-md-2 mb-2 form-check miembro-card">
+                    <input type="checkbox" id="{{ miembro.id }}_present" name="presente_{{miembro.id}}"
+                           value="True"
+                           {% if miembro.presente %} checked {% endif %}>
+                    <label for="{{ miembro.id }}_present">{{ miembro.name }} {{ miembro.lastname }}</label>
                 </div>
-            </div>
-
-
-            <div class="card-footer" style="background-color: #1D3A49; color: white;">
-                <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar</button>
-                <a href="{{list_url}}" class="btn btn-danger btn-flat">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
+                {% endfor %}
             </div>
         </div>
     </div>
+</div>
 
-</form>
 
 <style>
     .miembro-card {

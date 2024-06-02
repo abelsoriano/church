@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-!0_o8yti7x5_q^8a67hk1(^m&pbeun6rs!1#b*6motzx$9we51
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['1c54-200-26-184-161.ngrok-free.app']
+# CSRF_TRUSTED_ORIGINS = ['https://1c54-200-26-184-161.ngrok-free.app']
 
 # Application definition
 
@@ -40,7 +41,6 @@ INSTALLED_APPS = [
     # Libs
     'widget_tweaks',
     'rest_framework',
-    'rest_framework_swagger',
     'bootstrap4',
 
 
@@ -87,7 +87,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'church',
-        'USER': 'admin',
+        'USER': 'postgres',
         'PASSWORD': 'nicolas',
         'HOST': 'localhost',   # Puedes cambiarlo si tu base de datos está en un servidor remoto
         'PORT': '5432',        # El puerto por defecto de PostgreSQL

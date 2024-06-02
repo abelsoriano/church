@@ -1,38 +1,59 @@
-document.querySelectorAll('.modal').forEach(function(modal) {
-    modal.addEventListener('hidden.bs.modal', function() {
-        // Limpiar el valor de 'show_modal' en la sesión
-        fetch('/clear_session/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 'key': 'show_modal' })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al limpiar la sesión');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    });
-});
+// Función para manejar la presentación secuencial de modales
+let modales = document.querySelectorAll('.modal');
+let indiceActual = -1; // Inicializamos a -1 para comenzar desde el primer modal
 
-function validarFormulario() {
-    var miembroId = document.getElementById('miembro_id').value;
-    var statusValue = document.querySelector('input[name="status"]:checked');
-    if (statusValue === null) {
-        alert('Debe seleccionar un estado');
-        return false;
+function manejarSiguienteModal() {
+    indiceActual++; // Incrementamos para el próximo modal
+    if (indiceActual < modales.length) {
+        let modalBootstrap = new bootstrap.Modal(modales[indiceActual]);
+        modalBootstrap.show();
+    } else {
+        console.log("Todos los modales han sido mostrados, intentando cerrar el último modal.");
+       if (indiceActual > 0) {  // Asegúrate de que haya al menos un modal mostrado anteriormente
+           let ultimoModalElement = modales[indiceActual - 1];
+           let ultimoModal = bootstrap.Modal.getInstance(ultimoModalElement);
+           if (ultimoModal) {
+                ultimoModal.hide(); // Cierra el último modal mostrado
+           }
+       }
     }
-    statusValue = statusValue.value;
-    console.log("miembro_id:", miembroId);
-    console.log("status:", statusValue);
-    if (miembroId === '' || !isNaN(miembroId)) {
-        alert('El ID del miembro no es válido');
-        return false;
-    }
-    return true;
 }
+
+
+
+
+
+// Función para enviar datos del formulario con AJAX
+function enviarFormulario(event, miembroId) {
+    event.preventDefault();
+    var form = event.target;
+    var data = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: {
+            'X-CSRFToken': data.get('csrfmiddlewaretoken')
+        }
+    }).then(response => {
+        if (!response.ok) {
+            // Lanza un error con el estado para entender mejor el problema
+            throw new Error('HTTP error, status = ' + response.status);
+        }
+        return response.json();
+    }).then(data => {
+        console.log('Success:', data);
+        $(form.closest('.modal')).modal('hide'); // Ocultamos el modal actual
+        manejarSiguienteModal(); // Mostramos el siguiente modal
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un error. Por favor, intenta de nuevo. ' + error.message);
+    });
+
+    return false;
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    manejarSiguienteModal(); // Inicializamos el primer modal
+});

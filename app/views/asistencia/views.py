@@ -1,22 +1,28 @@
-from datetime import date, timedelta
-from django.contrib import messages
+
+from datetime import date, timedelta, datetime
+
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count, Q
 from django.db.models.functions import  Trunc, Concat, ExtractWeekDay
 
-from django.http import HttpResponseBadRequest, JsonResponse
+
 from django.db.models import Value, CharField
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import redirect
+
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from django.views.generic import *
-from django.shortcuts import redirect, get_object_or_404
+
 from app.forms import AsistenciaForm
 from app.models import *
+
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
 
 
 class AttendanceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -25,7 +31,12 @@ class AttendanceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'asistencia/AsistenciaCreate.html'
     success_url = reverse_lazy('asys:list_asistencia')
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def post(self, request, *args, **kwargs):
+        response_data = {'success': False}
         try:
             miembros = Miembro.objects.filter(category='joven')
             miembros_con_inasistencias = Attendance.objects.filter(miembro__category='joven', present=False).values('miembro').annotate(total_inasistencias=Count('id'))
@@ -33,21 +44,27 @@ class AttendanceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
             for miembro in miembros:
                 try:
-                    present = request.POST.get(f'presente_{miembro.id}', 'False')
-                    present = True if present == 'True' else False
-                    attendance = Attendance.objects.create(miembro=miembro, present=present, date=timezone.now())
-                    if attendance:  # Si la asistencia se creó correctamente
-                        if not present and miembro.id in miembros_ids_con_inasistencias:
-                            miembro_obj = Miembro.objects.get(id=miembro.id)
-                            inasistencias = Attendance.objects.filter(miembro=miembro_obj, present=False).count()
-                            messages.warning(request, f"El miembro {miembro_obj.name} {miembro_obj.lastname} ha alcanzado {inasistencias} inasistencias.", extra_tags={'modal_trigger': True, 'miembro_id': miembro_obj.id})
+                    present = request.POST.get(f'presente_{miembro.id}', 'False') == 'True'
+                    attendance = Attendance.objects.create(miembro=miembro, present=present, date=timezone.now(), day_of_week=date.today().strftime('%A'))
+
+                    if not present and miembro.id in miembros_ids_con_inasistencias:
+                        miembro_obj = Miembro.objects.get(id=miembro.id)
+                        inasistencias = Attendance.objects.filter(miembro=miembro_obj, present=False).count()
+                        miembro_id_tag = f"miembro_id:{miembro_obj.id}"
+                        messages.warning(request,
+                                         f"El miembro {miembro_obj.name} {miembro_obj.lastname} ha alcanzado {inasistencias} inasistencias.",
+                                         extra_tags=f"modal_trigger {miembro_id_tag}")
+
                 except Exception as e:
                     messages.error(request, f"Ha ocurrido un error al registrar la asistencia para el miembro {miembro.name}. Error: {str(e)}")
 
-            return redirect('asys:list_asistencia')
+            response_data['success'] = True
+            return JsonResponse(response_data)
+
         except Exception as e:
             messages.error(request, f"Ha ocurrido un error al registrar la asistencia. Error: {str(e)}")
-            return redirect('asys:create_asistencia')
+            response_data['error'] = str(e)
+            return JsonResponse(response_data)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -56,9 +73,8 @@ class AttendanceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         context['title'] = 'Creando nueva Asistencia'
         context['list_url'] = self.success_url
         context['action'] = 'add'
-        return context
 
-        ################################ paginacion #################################
+        # Paginación
         miembros = Miembro.objects.filter(category='joven')
         paginator = Paginator(miembros, 90)  # Dividir en páginas de 90 miembros cada una
         page_number = self.request.GET.get('page')
@@ -69,25 +85,38 @@ class AttendanceCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         except EmptyPage:
             miembros_pagina = paginator.page(paginator.num_pages)
         context['miembros'] = miembros_pagina
+
         return context
+
+
+
+from django.http import JsonResponse
 
 def guardar_status(request):
     if request.method == 'POST':
-        miembro_id = request.POST.get('miembro_id')
+        miembro_id = request.POST.get('id')
         status = request.POST.get('status')
+
+        # Validation (same as before)
+        if not miembro_id:
+            return JsonResponse({'error': 'El ID del miembro no puede estar vacío'}, status=400)
 
         if miembro_id and status:
             if miembro_id.isdigit():
                 try:
-                    miembro = get_object_or_404(Miembro, id=miembro_id)
+                    miembro = get_object_or_404(Miembro, id=int(miembro_id))
                     MiembroStatus.objects.create(miembro=miembro, status=status)
-                    return redirect('asys:list_asistencia')
+                    return JsonResponse({'success': 'Estado guardado exitosamente'}, status=200)
                 except Miembro.DoesNotExist:
-                    messages.error(request, 'El ID del miembro no existe')
+                    return JsonResponse({'error': 'El ID del miembro no existe'}, status=404)
             else:
-                messages.error(request, 'El ID del miembro no es un número entero')
-            return redirect('asys:list_asistencia')
+                return JsonResponse({'error': 'El ID del miembro no es un número entero'}, status=400)
+
+    return JsonResponse({'error': 'Solicitud no permitida'}, status=405)
+
     return redirect('asys:list_asistencia')
+
+
 
 
 
@@ -111,10 +140,11 @@ class AttendanceList(ListView):
         return inattendance_count
 
     def get_queryset(self):
+
         queryset = Attendance.objects.annotate(
             fecha=Trunc('date', 'day'),
-            weekday_name=ExtractWeekDay('date')  # Function for day name
-        ).values('fecha', 'weekday_name').annotate(
+            weekday_name=ExtractWeekDay('date') - 1
+        ).values('fecha', 'weekday_name', 'day_of_week').annotate(
             total=Count('id'),
             total_true=Count('id', filter=Q(present=True)),
             total_false=Count('id', filter=Q(present=False)),
@@ -129,6 +159,7 @@ class AttendanceList(ListView):
             4: 'Jueves',
             5: 'Viernes',
             6: 'Sábado'
+
         }
 
         for entry in queryset:
@@ -141,8 +172,6 @@ class AttendanceList(ListView):
         context['create_url'] = reverse_lazy('asys:crear_asistencia')
         context['list_url'] = reverse_lazy('list_asistencia')
         context['entity'] = 'Miembros'
-        # inattendance_count = self.get_inattendance_count()  # Get the count value directly
-        # context['show_modal'] = inattendance_count >= 2
         return context
 
 

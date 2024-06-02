@@ -19,8 +19,6 @@ class MemberForm(ModelForm):
                 attrs={
                     'type': 'text',
                     'class': 'form-control',
-                    # 'id': 'validationCustom01',
-                    # 'required': True,
                     'placeholder': 'Ingrese un nombre',
 
                 }
@@ -30,7 +28,6 @@ class MemberForm(ModelForm):
                 attrs={
                     'type': 'text',
                     'class': 'form-control',
-
                     'placeholder': 'Ingrese su apellido',
                 }
             ),
@@ -53,14 +50,14 @@ class MemberForm(ModelForm):
                 attrs={'autocomplete': 'off', 'id': 'datepicker2', 'class': 'form-control datepicker',
                        'placeholder': 'm/d/yyyy',
 
-                       }
+                }
             ),
 
             'state': Select(attrs={'class': 'form-control', }),
             'address': TextInput(attrs={'class': 'form-control', 'placeholder': 'Direccion'}),
-            'fecha_ingreso': DateInput(format='%d/%m/%Y', attrs={  # 'value': datetime.now().strftime('%m/%d/%Y'),
-                'autocomplete': 'off', 'id': 'datepicker', 'class': 'form-control datepicker',
-                'placeholder': 'm/d/yyyy'}),
+            'fecha_ingreso': DateInput(format='%d/%m/%Y', attrs={'autocomplete': 'off', 'id': 'datepicker',
+                                                                 'class': 'form-control datepicker',
+                                                                 'placeholder': 'm/d/yyyy'}),
             'phone': NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese sin guión'}),
             'email': EmailInput(attrs={'class': 'form-control', 'placeholder': '@mail.hotmail.outlook'}),
             'cargo': Select(attrs={'class': 'form-control', 'class': 'form-control select2'}),
@@ -119,14 +116,10 @@ class ServicioForm(ModelForm):
         return data
 
 
-
-
 class AsistenciaForm(forms.ModelForm):
-
     class Meta:
         model = Attendance
         fields = ['miembro', 'date', 'present']
-
 
 #
 #

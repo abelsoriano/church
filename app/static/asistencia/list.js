@@ -13,9 +13,9 @@ $(function () {
                 "render": function (data, type, row, meta) {
                     if (type === 'display') {
                         if (data) {
-                            return '<span class="badge badge-success">Presente</span>';
+                           return '<span class="badge badge-success" style="background-color: green;">Presente</span>';
                         } else {
-                            return '<span class="badge badge-danger">Ausente</span>';
+                            return '<span class="badge badge-danger" style="background-color: red;">Ausente</span>';
                         }
                     }
                     return data;  // Para otros tipos de renderización, como 'sort' o 'filter'

@@ -2,113 +2,111 @@
 {% load widget_tweaks %}
 {% block contents %}
 
-{% load static %}
 
-<link href="{% static 'lib/select2-4.0.13/css/select2.min.css' %}" rel="stylesheet"/>
-<link href="{% static 'lib/select2-4.0.13/css/select2-bootstrap4.min.css' %}" rel="stylesheet"/>
-<script src="{% static 'lib/select2-4.0.13/js/select2.min.js' %}"></script>
-<script src="{% static 'lib/select2-4.0.13/js/i18n/es.js' %}"></script>
+<main class="container-fluid">
+    <div class="row px-xl-6">
+        <div class="col-12">
+            <form method="post" action="." enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row px-xl-6">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center p-3 my-3 text-white bg-primary rounded shadow-sm">
+                            {% if action == 'add' %}
+                            <i class="fa fa-user-plus"></i>
+                            {% else %}
+                            <i class="fas fa-edit"></i>
+                            {% endif %}
+                            {{ title }}
+                        </div>
 
-<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/font-awesome@5.15.3/css/all.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+                        <input type="hidden" name="action" value="{{ action }}">
+                        {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <h5><i class="icon fas fa-ban"></i> Ha ocurrido un error al querer guardar el registro</h5>
+                            <ul>
+                                {% for field in form %}
+                                {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-      integrity="sha512-cbPRCEV0qCRtnVfKl9lYiwpkTKB+rj8tnMe7q7yo6S5EdK3R6vZ6h8d+H95eLu+4Z6F+Dzcpvwt52EPCx45dA=="
-      crossorigin="anonymous" referrerpolicy="no-referrer"/>
+                        {% block campos %}
+                        {% endblock %}
+                    </div>
 
-<script src="{% static 'miembro/js/helper.js' %}"></script>
-
-<form method="post" action="." enctype="multipart/form-data">
-    {% csrf_token %}
-    <!--    <div class="card-body">-->
-    <!--Header del card-->
-    <div class="container-fluid ">
-        <div class="card card-primary">
-            <div class="card-header">
-
-                {% if action == 'add' %}
-                <i class="fa fa-user-plus"></i>
-                {% else %}
-                <i class="fas fa-edit"></i>
-                {% endif %}
-
-                {{ title }}
-            </div>
-
-
-            <!-- Body -->
-            <div class="card-body">
-
-                <input type="hidden" name="action" value="{{ action }}">
-                {% if form.errors %}
-                <div class="alert alert-danger alert-dismissible">
-                    <button type="submit" class="close" data-dismiss="alert" aria-hidden="true">Ã—</button>
-                    <h5><i class="icon fas fa-ban"></i> Ha ocurrido un error al querer guardar el registro</h5>
-                    <ul>
-                        {% for field in form %}
-                        {% for error in field.errors %}
-                        <li>{{ error }}</li>
-                        {% endfor %}
-                        {% endfor %}
-                    </ul>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar</button>
+                        <button href="{{list_url}}" class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar y agregar otro</button>
+                        <a href="{{list_url}}" class="btn btn-danger btn-flat">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                    </div>
                 </div>
-                {% endif %}
-
-
-                {% block campos %}
-                {% endblock %}
-            </div>
-            <div class="card-footer">
-                <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar</button>
-                <a href="{{list_url}}" class="btn btn-danger btn-flat">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
-            </div>
+            </form>
         </div>
-    </div>       <!-- /.card-footer-->
-    <!--    </div>-->
+    </div>
+</main>
 
-</form>
+
 
 <script>
-    {% if form.errors %}
-            var errors = '';
-            {% for field in form %}
-                {% for error in field.errors %}
-                    errors += '{{ error }}\n';
-                {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-                errors += '{{ error }}\n';
-            {% endfor %}
-            Swal.fire({
-                title: 'Error!',
-                text: errors,
-                icon: 'error'
-            });
-        {% endif %}
-
-        $('form').on('submit', function (e) {
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
-            var parameters = new FormData(this);
-            submit_with_ajax(window.location.pathname, 'Notificación', '¿Estas seguro de realizar la siguiente acción?', parameters, function () {
-                location.href = '{{ list_url }}';
+
+            const parameters = new FormData(this);
+            const action = form.querySelector('input[name="action"]').value;
+
+            fetch(window.location.pathname, {
+                method: 'POST',
+                body: parameters,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: action === 'add' ? 'El miembro ha sido creado exitosamente.' : 'El miembro ha sido actualizado exitosamente.',
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.href = '{{ list_url }}';
+                    });
+                } else {
+                    let errorMessages = 'There was an error processing your request.';
+                    if (data.errors) {
+                        errorMessages = Object.values(data.errors).map(errList => errList.join(', ')).join('\n');
+                    }
+                    Swal.fire({
+                        title: 'Error!',
+                        text: errorMessages,
+                        icon: 'error'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an error processing your request.',
+                    icon: 'error'
+                });
             });
-        });
-
-
-</script>
-
-{% block javascript %}
-<script type="application/javascript">
-    $(function () {
-        $('.select2').select2({
-            theme: "bootstrap4",
-            language: 'es'
         });
     });
 </script>
+
+
+
+
+{% block javascript %}
+
 {% endblock %}
 
 

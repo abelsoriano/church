@@ -1,11 +1,6 @@
-from datetime import datetime
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 from django.db import models
-from django.core.exceptions import ValidationError
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
+
 
 from django.forms import model_to_dict
 from django.utils import timezone
@@ -17,7 +12,6 @@ from setting.settings import MEDIA_URL
 
 class Estado(models.Model):
     name = models.CharField(max_length=50, verbose_name='Estado')
-
     def __str__(self):
         return self.name
 
@@ -51,35 +45,16 @@ class Cargo(models.Model):
         ordering = ['id']
 
 
-def validate_dni_length(value):
-    if value is not None and (value < 10000000000 or value > 99999999999):
-        raise ValidationError("La longitud del número de cédula debe ser de 11 dígitos.")
-
-
-def validate_phone_prefix(value):
-    if value is not None and (value < 1000000000 or value > 9999999999):
-        raise ValidationError("La longitud del número de teléfono debe ser de 10 dígitos.")
-
-    # Convierte el valor a cadena para poder comprobar el prefijo
-    phone_str = str(value)
-
-    # Verifica si el prefijo comienza con "809", "829" o "849"
-    if not phone_str.startswith(("809", "829", "849")):
-        raise ValidationError("El número de teléfono debe comenzar con 809, 829 o 849.")
-
-
 # Crearte miembros
 class Miembro(models.Model):
     name = models.CharField(max_length=50, verbose_name='NOMBRE')
     lastname = models.CharField(max_length=50, verbose_name='APELLIDOS')
-    dni = models.BigIntegerField(verbose_name='CEDULA', unique=True, null=True, blank=True,
-                                 validators=[validate_dni_length])
+    dni = models.BigIntegerField(max_length=10, verbose_name='CEDULA', unique=True, null=True, blank=True)
     gender = models.CharField(max_length=15, choices=gender_choices, verbose_name="GENERO")
     date_joined = models.DateField(verbose_name='FECHA DE NACIMIENTO')
     address = models.CharField(max_length=150, verbose_name='DIRECCION')
     fecha_ingreso = models.DateField(verbose_name='FECHA DE INGRESO')
-    phone = models.PositiveIntegerField(null=True, blank=True, verbose_name='TELEFONO',
-                                        validators=[validate_phone_prefix])
+    phone = models.BigIntegerField(max_length=10, null=True, blank=True, verbose_name='TELEFONO')
     email = models.CharField(max_length=30, null=True, blank=True, verbose_name='CORREO ELECTRONICO')
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, verbose_name='CARGO')
     image = models.ImageField(upload_to='avatar', null=True, blank=True, verbose_name='IMAGEN')
@@ -117,11 +92,6 @@ class Miembro(models.Model):
         ordering = ['id']
 
 
-class Grupo(models.Model):
-    name = models.CharField(max_length=50, verbose_name='NOMBRE DEL GRUPO')
-    members = models.ManyToManyField(Miembro, related_name='grupos', verbose_name='MIEMBROS DEL GRUPO')
-
-
 
 class Servicio(models.Model):
     fecha = models.DateField(default=timezone.now, verbose_name='FECHA DE SERVICIO')
@@ -147,8 +117,10 @@ class Attendance(models.Model):
     present = models.BooleanField(default=False, null=True, blank=True, verbose_name='PRESENTE')
     day_of_week = models.CharField(max_length=10, blank=True, editable=False, verbose_name='DÍA DE LA SEMANA')
 
-    # def __str__(self):
-    #     return self.miembro.name + ' ' + self.miembro.lastname
+    def toJSON(self):
+        data = model_to_dict(self)
+        data['miembro'] = self.miembro.toJSON() if self.miembro else None
+        return data
 
     class Meta:
         verbose_name = 'Asistencia'

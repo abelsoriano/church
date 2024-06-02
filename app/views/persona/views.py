@@ -8,23 +8,11 @@ from app.models import Miembro
 from django.http import JsonResponse
 
 
-# class ContactoSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Miembro
-#         fields = '__all__'
-
-
-# class ContactoAPIView(APIView):
-#     def get(self, request):
-#         miembro = Miembro.objects.all()
-#         serializer = ContactoSerializer(miembro, many=True)
-#         return Response(serializer.data)
 
 
 class MembersListView(ListView):
     model = Miembro
     template_name = 'persona/list.html'
-
 
     @method_decorator(login_required)
     @method_decorator(csrf_exempt)
@@ -58,25 +46,31 @@ class MembersCreate(CreateView):
     form_class = MemberForm
     template_name = 'persona/create.html'
     success_url = reverse_lazy('asys:miembro_list')
-    reverse_lazy = reverse_lazy('asys:members_create')
-    url_redirect = success_url
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        data = {}
-        try:
-            action = request.POST['action']
-            if action == 'add':
-                form = self.get_form()
-                data = form.save()
-            else:
-                data['error'] = 'No ha ingresado a ninguna opción'
-        except Exception as e:
-            data['error'] = str(e)
-        return JsonResponse(data)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            data = {}
+            try:
+                action = request.POST.get('action', None)
+                if action == 'add':
+                    form = self.get_form()
+                    if form.is_valid():
+                        form.save()
+                        data['success'] = True
+                    else:
+                        data['success'] = False
+                        data['errors'] = form.errors
+                else:
+                    data['error'] = 'No ha ingresado a ninguna opción'
+            except Exception as e:
+                data['error'] = str(e)
+            return JsonResponse(data)
+        else:
+            return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -85,12 +79,12 @@ class MembersCreate(CreateView):
         context['list_url'] = self.success_url
         context['action'] = 'add'
         return context
+
 class MembersUpdate(UpdateView):
     model = Miembro
     form_class = MemberForm
     template_name = 'persona/create.html'
     success_url = reverse_lazy('asys:miembro_list')
-    url_redirect = success_url
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -98,17 +92,25 @@ class MembersUpdate(UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        data = {}
-        try:
-            action = request.POST['action']
-            if action == 'edit':
-                form = self.get_form()
-                data = form.save()
-            else:
-                data['error'] = 'No ha ingresado a ninguna opción'
-        except Exception as e:
-            data['error'] = str(e)
-        return JsonResponse(data)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            data = {}
+            try:
+                action = request.POST.get('action', None)
+                if action == 'edit':
+                    form = self.get_form()
+                    if form.is_valid():
+                        form.save()
+                        data['success'] = True
+                    else:
+                        data['success'] = False
+                        data['errors'] = form.errors
+                else:
+                    data['error'] = 'No ha ingresado a ninguna opción'
+            except Exception as e:
+                data['error'] = str(e)
+            return JsonResponse(data)
+        else:
+            return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
