@@ -6,8 +6,8 @@ from app.models import *
 
 
 # Create Miembro
-class MemberForm(ModelForm):
-    def __int__(self, *args, **kwargs):
+class MemberForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['name'].widget.attrs['autofocus'] = True
 
@@ -15,56 +15,33 @@ class MemberForm(ModelForm):
         model = Miembro
         fields = '__all__'
         widgets = {
-            'name': TextInput(
-                attrs={
-                    'type': 'text',
-                    'class': 'form-control',
-                    'placeholder': 'Ingrese un nombre',
-
-                }
-            ),
-
-            'lastname': TextInput(
-                attrs={
-                    'type': 'text',
-                    'class': 'form-control',
-                    'placeholder': 'Ingrese su apellido',
-                }
-            ),
-            'dni': NumberInput(
-                attrs={
-                    'type': 'number',
-                    'class': 'form-control',
-                    'placeholder': 'Ingresar su numero de identidad',
-                }
-            ),
-            'gender': Select(
-                attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Ingrese su genero',
-                }
-            ),
-
-            'date_joined': DateInput(
-                format='%d/%m/%Y',
-                attrs={'autocomplete': 'off', 'id': 'datepicker2', 'class': 'form-control datepicker',
-                       'placeholder': 'm/d/yyyy',
-
-                }
-            ),
-
-            'state': Select(attrs={'class': 'form-control', }),
-            'address': TextInput(attrs={'class': 'form-control', 'placeholder': 'Direccion'}),
-            'fecha_ingreso': DateInput(format='%d/%m/%Y', attrs={'autocomplete': 'off', 'id': 'datepicker',
-                                                                 'class': 'form-control datepicker',
-                                                                 'placeholder': 'm/d/yyyy'}),
-            'phone': NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese sin guión'}),
-            'email': EmailInput(attrs={'class': 'form-control', 'placeholder': '@mail.hotmail.outlook'}),
-            'cargo': Select(attrs={'class': 'form-control', 'class': 'form-control select2'}),
-            'category': Select(attrs={'class': 'form-control', }),
-            'image': FileInput(attrs={'class': 'form-control'})
-
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese un nombre'}),
+            'lastname': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese su apellido'}),
+            'dni': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese su numero de identidad'}),
+            'gender': forms.Select(attrs={'class': 'form-control'}),
+            'date_joined': DateInput(format='%d/%m/%Y',
+                                     attrs={'class': 'form-control datepicker', 'placeholder': 'mm/dd/yyyy'}),
+            'state': forms.Select(attrs={'class': 'form-control'}),
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Direccion'}),
+            'fecha_ingreso': DateInput(format='%d/%m/%Y', attrs={'class': 'form-control datepicker', 'placeholder': 'mm/dd/yyyy'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese sin guión'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': '@mail.hotmail.outlook'}),
+            'cargo': forms.Select(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'})
         }
+
+    def clean_dni(self):
+        dni = self.cleaned_data.get('dni')
+        if len(dni) != 13 or not dni.replace("-", "").isdigit():
+            raise forms.ValidationError("El DNI debe tener el formato 000-0000000-0 y contener 11 números.")
+        return dni
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if len(phone) != 12 or not phone.replace("-", "").isdigit():
+            raise forms.ValidationError("El teléfono debe tener el formato 000-000-0000 y contener 10 números.")
+        return phone
 
     def save(self, commit=True):
         data = {}

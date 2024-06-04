@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -15,54 +14,48 @@
     <link href="{% static 'css/animate/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/animate/offcanvas.css' %}" rel="stylesheet">
 
+    <!-- Bootstrap Datepicker CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 
-    <!--------------------------manejar los errores------------------------------------------->
+    <!-- Manejar los errores -->
     <link rel="stylesheet" href="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.css' %}">
     <link href="{% static 'css/helper.css' %}" rel="stylesheet">
-    <!--  jQuery-->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
-
-    <!---------------------------------Data table------------------------------------------->
+    <!-- Data table -->
     <link rel="stylesheet" href="{% static 'lib/datatables-1.10.20/css/dataTables.bootstrap4.min.css' %}"/>
-    <link rel="stylesheet"
-          href="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/css/responsive.bootstrap4.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/css/responsive.bootstrap4.min.css' %}"/>
 </head>
-
-
 <body class="bg-light">
 
 {% block body %}
 {% endblock %}
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/offcanvas.js' %}"></script>
 
-<!----------------------------------Manejo de error-------------------------------->
+<!-- Bootstrap Datepicker JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<!-- Manejo de errores -->
 <script src="{% static 'lib/jquery-confirm-v3.3.4/jquery-confirm.min.js' %}"></script>
 <script src="{% static 'lib/sweetalert2-9.10.0/sweetalert2.all.min.js' %}"></script>
 <script src="{% static 'js/functions.js' %}"></script>
 
-
-<!--------------------------------------------Data Table---------------------------------------------------->
-<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+<!-- Data Table -->
 <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
 <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
 <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
 <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+
 {% block head %}
 {% endblock %}
-
 
 {% block javascript %}
 <!-- Agrega tu JavaScript aquí si es necesario -->
 {% endblock %}
 
 </body>
-
-
 </html>
-

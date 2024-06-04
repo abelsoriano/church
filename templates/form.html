@@ -3,6 +3,7 @@
 {% block contents %}
 
 
+
 <main class="container-fluid">
     <div class="row px-xl-6">
         <div class="col-12">
@@ -10,7 +11,7 @@
                 {% csrf_token %}
                 <div class="row px-xl-6">
                     <div class="col-12">
-                        <div class="d-flex align-items-center p-3 my-3 text-white bg-primary rounded shadow-sm">
+                        <div class="d-flex align-items-center p-2 my-3 text-white bg-primary rounded shadow-sm">
                             {% if action == 'add' %}
                             <i class="fa fa-user-plus"></i>
                             {% else %}
@@ -74,7 +75,7 @@
                 if (data.success) {
                     Swal.fire({
                         title: 'Success!',
-                        text: action === 'add' ? 'El miembro ha sido creado exitosamente.' : 'El miembro ha sido actualizado exitosamente.',
+                        text: action === 'add' ? 'The member has been created successfully.' : 'The member has been updated successfully.',
                         icon: 'success'
                     }).then(() => {
                         window.location.href = '{{ list_url }}';
@@ -99,6 +100,18 @@
                 });
             });
         });
+
+        // Input masks for DNI and phone
+        Inputmask("999-9999999-9").mask(document.querySelector('[name="dni"]'));
+        Inputmask("999-999-9999").mask(document.querySelector('[name="phone"]'));
+
+
+        // Initialize datepickers
+        $('.datepicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true
+        });
     });
 </script>
 
@@ -106,8 +119,6 @@
 
 
 {% block javascript %}
-
+<!-- Aquí puedes añadir JavaScript adicional si es necesario -->
 {% endblock %}
-
-
 {% endblock %}
