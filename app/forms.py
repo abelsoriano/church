@@ -25,7 +25,7 @@ class MemberForm(forms.ModelForm):
             'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Direccion'}),
             'fecha_ingreso': DateInput(format='%d/%m/%Y', attrs={'class': 'form-control datepicker', 'placeholder': 'mm/dd/yyyy'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese sin guión'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': '@mail.hotmail.outlook'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': '@'}),
             'cargo': forms.Select(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'})

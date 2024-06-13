@@ -75,7 +75,7 @@ def generar_miembro():
     date_joined = fake.date_of_birth().strftime('%Y-%m-%d')
     address = fake.address()
     fecha_ingreso = fake.future_date(end_date='+30d').strftime('%Y-%m-%d')
-    # phone = generate_phone_number()
+    phone = generate_phone_number()
     email = fake.email()
     cargo = random.choice(Cargo.objects.all())
     image = fake.image_url()
@@ -99,7 +99,7 @@ def generar_miembro():
         date_joined=date_joined,
         address=address,
         fecha_ingreso=fecha_ingreso,
-        # phone=phone,
+        phone=phone,
         email=email,
         cargo=cargo,
         # image = miembro.read_image(),

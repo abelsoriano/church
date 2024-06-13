@@ -75,68 +75,45 @@ $(function() {
 });
 
 
-//Card detalle de personas
-$(function() {
-	const detalleEmpleado = $('#detalle');
 
-	    $(document).on('keydown', function(event) {
+$(function() {
+    const detalleEmpleado = $('#detalle');
+
+    $(document).on('keydown', function(event) {
         if (event.key === 'Escape') {
             detalleEmpleado.hide();
         }
-        });
+    });
 
+    $('#data tbody').on('click', 'tr', function() {
+        const table = $('#data').DataTable();
+        const data = table.row(this).data();
+        const name = data.name;
+        const lastname = data.lastname;
+        const dni = data.dni;
+        const state = data.state.name;
+        const phone = data.phone;
+        const email = data.email;
+        const address = data.address;
+        const image = data.image;
 
+        detalleEmpleado.find('#perfil').attr('src', image);
+        detalleEmpleado.find('#nombre-empleado').text(`${name} ${lastname}`);
+        detalleEmpleado.find('#dni-empleado').text(`Cedula: ${dni}`);
+        detalleEmpleado.find('#nacimiento-empleado').text(`Fecha de Nacimiento: ${data.date_joined}`);
+        detalleEmpleado.find('#genero-mpleado').text(`Genero: ${data.gender}`);
+        detalleEmpleado.find('#telefono-empleado').text(`Teléfono: ${phone}`);
+        detalleEmpleado.find('#direccion-empleado').text(`Dirección: ${address}`);
+        detalleEmpleado.find('#ingreso-empleado').text(`Fecha de Ingreso: ${data.fecha_ingreso}`);
+        detalleEmpleado.find('#correo-empleado').text(`Correo: ${email}`);
+        detalleEmpleado.find('#estado-empleado').text(`Estado: ${state}`);
+        detalleEmpleado.find('#cargo-empleado').text(`Cargo: ${data.cargo.name}`);
 
+        detalleEmpleado.show();
+    });
 
-	$('#data tbody').on('click', 'tr', function() {
-		const table = $('#data').DataTable();
-		const data = table.row(this).data();
-		const name = data.name;
-		const lastname = data.lastname;
-		const dni = data.dni;
-		const state = data.state.name;
-		const phone = data.phone;
-		const email = data.email;
-		const address = data.address;
-		const image = data.image;
-
-		detalleEmpleado.html(`
-                 <button type="button" class="close" id="close-detalle" style="position: absolute; top: 10px; right: 10px; padding: 0; border: none; font-size: 1.5rem; font-weight: bold; color: #FFC300; cursor: pointer;">&#x2716;</button>
-                <div class="card-body d-flex">
-                <div class="mr-3">
-                    <img class="card-img-top" id="perfil" src="${image}" style="width: 250px; height: 100%; alt="Foto de perfil">
-                </div>
-                <div>
-                    <h2 class="card-title" id="nombre-empleado">${name} ${lastname}</h2>
-                    <p class="card-text" id="dni-empleado"><strong>Cedula:</strong> ${dni}</p>
-                    <p class="card-text" id="nacimiento-empleado"><strong>Facha de Nacimiento:</strong> ${data.date_joined}</p>
-                    <p class="card-text" id="genero-mpleado"><strong>Genero:</strong> ${data.gender}</p>
-                    <p class="card-text" id="telefono-empleado"><strong>Teléfono:</strong> ${phone}</p>
-                    <p class="card-text" id="direccion-empleado"><strong>Dirección:</strong> ${address}</p>
-                    <p class="card-text" id="ingreso-empleado"><strong>Fecha de Ingreso:</strong> ${data.fecha_ingreso}</p>
-                    <p class="card-text" id="correo-empleado"><strong>Correo:</strong> ${email}</p>
-                    <p class="card-text" id="estado-empleado"><strong>Estado:</strong> ${state}</p>
-                    <p class="card-text" id="cargo-empleado"><strong>Cargo:</strong> ${data.cargo.name}</p>
-
-                </div>
-            </div>
-        `);
-
-		// Attach a click event listener to the close button
-		$('#close-detalle').click(function() {
-			detalleEmpleado.hide();
-		});
-
-
-
-		// Asignar el atributo href al boton editar y eliminar
-		detalleEmpleado.on('click', '.btn-close', function() {
-		detalleEmpleado.hide();
-	    });
-
-
-		// Mostrar el card con los detalles del empleado
-		detalleEmpleado.show();
-	});
-
+    detalleEmpleado.on('click', '.close-button', function() {
+        detalleEmpleado.hide();
+    });
 });
+

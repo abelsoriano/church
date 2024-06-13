@@ -16,7 +16,7 @@ def generar_persona():
         'date_joined': fake.date_of_birth().strftime('%d/%m/%Y'),
         'address': fake.address(),
         'fecha_ingreso': fake.future_date(end_date='+30d').strftime('%d/%m/%Y'),
-        # 'phone': fake.phone_number(),
+        'phone': fake.phone_number(),
         'email': fake.email(),
         'cargo': 'Miembro',
         'avatar': fake.image_url(),
