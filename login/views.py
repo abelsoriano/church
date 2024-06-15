@@ -1,17 +1,17 @@
-from pyexpat.errors import messages
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm
+
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 
-from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import FormView, RedirectView
 
 import setting.settings as setting
-# from login.form import RegisterForm
+
 
 
 class LoginFormView(LoginView):
@@ -52,3 +52,16 @@ class RegisterView(View):
             'form': user_created
         }
         return render(request, 'login.html', data)
+
+
+class HomePage(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        # Puedes agregar lógica adicional aquí si es necesario
+        return render(request, 'index.html')
+    
+def handler404(request, exception):
+    return render(request, '404.html', {})
+
+def handler500(request):
+    return render(request, '404.html', status=500)

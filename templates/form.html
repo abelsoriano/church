@@ -1,54 +1,48 @@
-{% extends 'body.html' %}
-{% load widget_tweaks %}
-{% block contents %}
+{% extends 'body.html' %} {% load widget_tweaks %} {% block contents %}
 
 
 
 <main class="container-fluid">
     <div class="row px-xl-6">
-        <div class="col-12">
+        <div class="col-14">
+    <div class="d-flex align-items-center p-3 my-3 text-white bg-primary rounded shadow-sm">
+        <div class="lh-2">
+            {% if action == 'add' %}
+            <i class="fa fa-user-plus"></i> {% else %}
+            <i class="fas fa-edit"></i> {% endif %} {{ title }}
+        </div>
+    </div>
+    <div class="card-body  my-3 p-3 bg-body rounded shadow-sm" >
+        <!-- <div class="col-12"> -->
             <form method="post" action="." enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row px-xl-6">
                     <div class="col-12">
-                        <div class="d-flex align-items-center p-2 my-3 text-white bg-primary rounded shadow-sm">
-                            {% if action == 'add' %}
-                            <i class="fa fa-user-plus"></i>
-                            {% else %}
-                            <i class="fas fa-edit"></i>
-                            {% endif %}
-                            {{ title }}
-                        </div>
-
-                        <input type="hidden" name="action" value="{{ action }}">
-                        {% if form.errors %}
+                        <input type="hidden" name="action" value="{{ action }}"> {% if form.errors %}
                         <div class="alert alert-danger alert-dismissible">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                             <h5><i class="icon fas fa-ban"></i> Ha ocurrido un error al querer guardar el registro</h5>
                             <ul>
-                                {% for field in form %}
-                                {% for error in field.errors %}
+                                {% for field in form %} {% for error in field.errors %}
                                 <li>{{ error }}</li>
-                                {% endfor %}
-                                {% endfor %}
+                                {% endfor %} {% endfor %}
                             </ul>
                         </div>
-                        {% endif %}
-
-                        {% block campos %}
-                        {% endblock %}
+                        {% endif %} {% block campos %} {% endblock %}
                     </div>
 
-                    <div class="card-footer">
-                        <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar</button>
-                        <button href="{{list_url}}" class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar y agregar otro</button>
-                        <a href="{{list_url}}" class="btn btn-danger btn-flat">
-                            <i class="fas fa-times"></i> Cancelar
+                    <div>
+                        <button class="btn btn-primary " type="submit "><i class="fas fa-save "></i> Guardar</button>
+                        <button href="{{create_url}} " class="btn btn-primary " type="submit "><i class="fas fa-save "></i> Guardar y agregar otro</button>
+                        <a href="{{list_url}} " class="btn btn-danger btn-flat ">
+                            <i class="fas fa-times "></i> Cancelar
                         </a>
                     </div>
                 </div>
             </form>
         </div>
+    </div>
+    </div>
     </div>
 </main>
 
@@ -61,7 +55,7 @@
             e.preventDefault();
 
             const parameters = new FormData(this);
-            const action = form.querySelector('input[name="action"]').value;
+            const action = form.querySelector('input[name="action "]').value;
 
             fetch(window.location.pathname, {
                 method: 'POST',
@@ -102,8 +96,8 @@
         });
 
         // Input masks for DNI and phone
-        Inputmask("999-9999999-9").mask(document.querySelector('[name="dni"]'));
-        Inputmask("999-999-9999").mask(document.querySelector('[name="phone"]'));
+        Inputmask("999-9999999-9 ").mask(document.querySelector('[name="dni "]'));
+        Inputmask("999-999-9999 ").mask(document.querySelector('[name="phone "]'));
 
 
         // Initialize datepickers

@@ -1,10 +1,10 @@
 from django.apps import AppConfig
-from django.contrib import admin
 
-
-class AppConfig(AppConfig):
+class MiappConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'app'
 
-# class AttendanceAdmin(admin.ModelAdmin):
+    def ready(self):
+        # Importar señales
+        import app.signals
 
